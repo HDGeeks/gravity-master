@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  
+  backend:
+    hostname: hemisphere-back
+
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 19000:19000
+    volumes:
+      - .:/app
+  
+  db:
+    hostname: hemisphere-back-db
+    image: postgres
+    restart: always
+
+    environment:
+      POSTGRES_USER: hemisphereuser
+      POSTGRES_DB: hemispheredb
+      POSTGRES_PASSWORD: hemispheredb1234
+    volumes:
+      - pgdata:/var/lib/postgresql/data  
