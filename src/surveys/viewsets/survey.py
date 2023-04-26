@@ -17,17 +17,17 @@ from surveys.utils import formatter
 from utils import responses 
 from utils import permissions as custom_permissions
 
-bucket_name = settings.AWS_SECRET_BUCKET_NAME
-bucket_url = settings.AWS_BUCKET_URL
+# bucket_name = settings.AWS_SECRET_BUCKET_NAME
+# bucket_url = settings.AWS_BUCKET_URL
 
-session = boto3.session.Session()
+# session = boto3.session.Session()
 
-client_s3 = session.client(
-    's3',
-    region_name = settings.AWS_REGION_NAME,
-    aws_access_key_id = settings.AWS_ACCESS_KEY_ID,
-    aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY
-)
+# client_s3 = session.client(
+#     's3',
+#     region_name = settings.AWS_REGION_NAME,
+#     aws_access_key_id = settings.AWS_ACCESS_KEY_ID,
+#     aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY
+# )
 
 class SurveyViewSet(viewsets.ModelViewSet):
 

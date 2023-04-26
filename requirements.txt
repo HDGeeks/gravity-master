@@ -5,3 +5,4 @@ django-location-field==2.1.0
 djangorestframework-simplejwt==5.2.0
 pip-chill==1.0.1
 psycopg2-binary==2.9.3
+Django
