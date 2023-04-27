@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path,include
+from django.conf.urls.static import static
 
 # rest framework imports
 from rest_framework import routers
@@ -26,4 +28,4 @@ urlpatterns = [
 
     # defines the refresh token and common urls
     path('users/token/refresh/',TokenRefreshView.as_view() ,name='refresh-token')
-]
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
