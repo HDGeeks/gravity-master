@@ -52,9 +52,12 @@ class AdminViewSet(viewsets.ModelViewSet):
         checkAdmin = ExtendedUser.objects.filter(
             role__role = 'Admin'
         )
+        username=request.data['email']
+        check_if_user_is_admin= ExtendedUser.objects.filter(username=username).filter(role=1).distinct()
 
-        if checkAdmin.exists():
+        if check_if_user_is_admin.exists():
             return responses.BadRequestErrorHandler("Admin account already exists")
+       
 
         # creates the admin account
         createdAdmin = ExtendedUser.objects.create(
