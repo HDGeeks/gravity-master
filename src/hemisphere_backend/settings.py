@@ -104,8 +104,8 @@ TEMPLATES = [
 WSGI_APPLICATION = "hemisphere_backend.wsgi.application"
 
 
-# Database
-# https://docs.djangoproject.com/en/4.0/ref/settings/#databases
+#Database
+#https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 # DATABASES = {
 #     'default': {
@@ -114,27 +114,18 @@ WSGI_APPLICATION = "hemisphere_backend.wsgi.application"
 #     }
 # }
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql_psycopg2",
-#         "NAME": "hemispheredb",
-#         "USER": "hemisphereuser",
-#         "HOST": "db",
-#         "PORT": 5432,
-#         "PASSWORD": "hemispheredb1234",
-#     }
-# }
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql_psycopg2",
-#         "NAME": "hemispheredb",
-#         "USER": "hemisphereuser",
-#         #"HOST": "hemisphere-back-db",
-#         'HOST': os.getenv('DB_HOST', 'localhost'),
-#         "PORT": 5432,
-#         "PASSWORD": "hemispheredb1234",
-#     }
-# }
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "hemispheredb",
+        "USER": "hemisphereuser",
+        #"HOST": "hemisphere-back-db",
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        "PORT": 5432,
+        "PASSWORD": "hemispheredb1234",
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
