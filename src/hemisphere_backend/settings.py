@@ -129,7 +129,8 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": "hemispheredb",
         "USER": "hemisphereuser",
-        "HOST": "hemisphere-back-db",
+        #"HOST": "hemisphere-back-db",
+        'HOST': os.getenv('DB_HOST', 'localhost'),
         "PORT": 5432,
         "PASSWORD": "hemispheredb1234",
     }
