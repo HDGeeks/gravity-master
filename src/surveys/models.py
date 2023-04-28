@@ -81,8 +81,9 @@ class Survey(CreationTimeStamp):
     project = models.ForeignKey(Project, on_delete= models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=200)
-    status = models.CharField(max_length=100,choices=STATUS_CHOICES,default="")
-    dataCollectors = models.ManyToManyField(ExtendedUser)
+    status = models.CharField(max_length=100,choices=STATUS_CHOICES,default=""),
+    dataCollectors = models.ManyToManyField(ExtendedUser,limit_choices_to={'role': 'data_collector'})
+
 
     class Meta:
         verbose_name_plural = "Surveys"

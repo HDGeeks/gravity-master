@@ -109,7 +109,7 @@ class SurveyViewSet(viewsets.ModelViewSet):
             description = request.data['description'],
             status = request.data['status']
         )
-        
+        # request.data['questions'] is a list .Loop through it .
         for question in request.data['questions']:
             hasMultiple = False
             isDependent = False
