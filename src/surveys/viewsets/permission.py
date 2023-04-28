@@ -1,6 +1,7 @@
 from rest_framework.permissions import BasePermission
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from users.models import Role,ExtendedUser
+from rest_framework.exceptions import AuthenticationFailed
 
 class HasAdminRole(BasePermission):
     def has_permission(self, request, view):
@@ -8,7 +9,7 @@ class HasAdminRole(BasePermission):
         try:
             jwt_auth = JWTAuthentication()
             user, jwt_token = jwt_auth.authenticate(request)
-        except:
+        except AuthenticationFailed:
             return False
         
         # Check if the user has the "admin" role
@@ -24,7 +25,7 @@ class HasDataCollectorRole(BasePermission):
         try:
             jwt_auth = JWTAuthentication()
             user, jwt_token = jwt_auth.authenticate(request)
-        except:
+        except AuthenticationFailed:
             return False
         
         # Check if the user has the "admin" role
