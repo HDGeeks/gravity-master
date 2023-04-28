@@ -30,7 +30,7 @@ SECRET_KEY = "django-insecure-!8b!^srfuoe3p63tve3gm$-4q51_oyp8q1co&gyh6a0cvlg@p!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["49.12.233.43", "localhost","http:127.0.0.1","https://127.0.0.1"]
+ALLOWED_HOSTS = ["49.12.233.43", "localhost", "http:127.0.0.1", "https://127.0.0.1"]
 
 
 # Application definition
@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     "users",
     "surveys",
     # drf_yasg
-    'drf_yasg',
+    "drf_yasg",
 ]
 
 # LOCATION_FIELD = {
@@ -59,7 +59,12 @@ INSTALLED_APPS = [
 #     'provider.mapbox.max_zoom': 13,
 #     'provider.mapbox.id': 'mapbox.streets',
 # }
-
+SWAGGER_SETTINGS = {
+    "SECURITY_DEFINITIONS": {
+        "Basic": {"type": "basic"},
+        "Bearer": {"type": "apiKey", "name": "Authorization", "in": "header"},
+    }
+}
 # Rest Framework settings
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -106,8 +111,8 @@ TEMPLATES = [
 WSGI_APPLICATION = "hemisphere_backend.wsgi.application"
 
 
-#Database
-#https://docs.djangoproject.com/en/4.0/ref/settings/#databases
+# Database
+# https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 # DATABASES = {
 #     'default': {
@@ -122,8 +127,8 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": "hemispheredb",
         "USER": "hemisphereuser",
-        #"HOST": "hemisphere-back-db",
-        'HOST': os.getenv('DB_HOST', 'localhost'),
+        # "HOST": "hemisphere-back-db",
+        "HOST": os.getenv("DB_HOST", "localhost"),
         "PORT": 5432,
         "PASSWORD": "hemispheredb1234",
     }
