@@ -101,7 +101,7 @@ class SurveyViewSet(viewsets.ModelViewSet):
         # checks if questions is not empty
         if len(request.data['questions']) == 0:
             return responses.BadRequestErrorHandler("questions can not be empty")
-
+        print('=============================================',request.data['status'])
         # creates the survey 
         createdSurvey = Survey.objects.create(
             project = checkProject[0],
@@ -109,6 +109,7 @@ class SurveyViewSet(viewsets.ModelViewSet):
             description = request.data['description'],
             status = request.data['status']
         )
+        print(request.data['questions'])
         # request.data['questions'] is a list .Loop through it .
         for question in request.data['questions']:
             hasMultiple = False
@@ -121,6 +122,8 @@ class SurveyViewSet(viewsets.ModelViewSet):
             audioURL = None
             videoURL = None
             imageURL = None
+            category=Category.objects.get(id=question['category_id'])
+            language=Language.objects.get(id=question['language_id'])
 
             if type(question) is not dict:
                 return responses.BadRequestErrorHandler("All question elements must be an object")
@@ -192,10 +195,13 @@ class SurveyViewSet(viewsets.ModelViewSet):
                 if not isinstance(question['isRequired'],bool):
                     return responses.BadRequestErrorHandler('question isRequired must be boolean')
                 isRequired = question['isRequired']
-            
+            print('====================================',category)
+            print('====================================',language)
             Question.objects.create(
                 survey = createdSurvey,
                 title = title,
+                category=category,
+                language=language,
                 hasMultipleAnswers = hasMultiple,
                 isRequired = isRequired,
                 type = questionType,
@@ -302,6 +308,8 @@ class SurveyViewSet(viewsets.ModelViewSet):
             checkQuestion.update(
                 survey = checkSurvey[0],
                 title = title,
+                category=question['category'],
+                language=question['language'],
                 hasMultipleAnswers = hasMultiple,
                 isRequired = isRequired,
                 type = questionType,
@@ -437,6 +445,8 @@ class SurveyViewSet(viewsets.ModelViewSet):
             createdQuestion = Question.objects.create(
                 survey = checkSurvey[0],
                 title = title,
+                category=question['category'],
+                language=question['language'],
                 hasMultipleAnswers = hasMultiple,
                 isRequired = isRequired,
                 type = questionType,

@@ -81,8 +81,9 @@ class Survey(CreationTimeStamp):
     project = models.ForeignKey(Project, on_delete= models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=200)
-    status = models.CharField(max_length=100,choices=STATUS_CHOICES,default=""),
-    dataCollectors = models.ManyToManyField(ExtendedUser,limit_choices_to={'role': 'data_collector'})
+    status = models.CharField(max_length=100,choices=STATUS_CHOICES,default="")
+    dataCollectors = models.ManyToManyField(ExtendedUser)
+    #limit_choices_to={'role': 'data_collector'}
 
 
     class Meta:
@@ -97,7 +98,23 @@ class Survey(CreationTimeStamp):
         return self.name
 
 
+class Category(CreationTimeStamp):
+    name = models.CharField(max_length=100)
+    class Meta:
+        verbose_name_plural = "Categories"
 
+    def __str__(self):
+        return self.name
+    
+class Language(CreationTimeStamp):
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name_plural = "Languages"
+        
+
+    def __str__(self):
+        return self.name
 
 class Question(CreationTimeStamp):
 
@@ -107,7 +124,9 @@ class Question(CreationTimeStamp):
         ('MEDIA','MEDIA')
     )
 
-    survey = models.ForeignKey(Survey, on_delete = models.CASCADE)
+    survey = models.ForeignKey(Survey, on_delete = models.CASCADE,null=False,blank=False)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE,blank=True,null=True)
+    language = models.ForeignKey(Language, on_delete=models.CASCADE,blank=True,null=True)
     title = models.CharField(max_length=500)
     hasMultipleAnswers = models.BooleanField(default=False)
     isDependent = models.BooleanField(default=False)
@@ -125,6 +144,7 @@ class Question(CreationTimeStamp):
         indexes = [
             models.Index(fields=['title'], name='title_idx'),
             models.Index(fields=['survey'], name='survey_id_idx'),]
+        
     def __str__(self) -> str:
         return self.title
 

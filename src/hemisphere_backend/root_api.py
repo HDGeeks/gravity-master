@@ -38,6 +38,9 @@ def api_root(request, format=None):
             "customers-list": reverse("customers-list", request=request, format=format),
             "projects-list": reverse("projects-list", request=request, format=format),
             "surveys-list": reverse("surveys-list", request=request, format=format),
+            "language-list": reverse("language-list", request=request, format=format),
+            "category-list": reverse("category-list", request=request, format=format),
+            "questions-category-list": reverse("questions-category-list", request=request, format=format),
             "refresh-token": reverse("refresh-token", request=request, format=format),
             "admin-site": reverse("admin:login", request=request, format=format),
 
