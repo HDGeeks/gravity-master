@@ -18,9 +18,9 @@ class RoleSerializer(serializers.ModelSerializer):
         model = ExtendedUser
         fields = ('id','role')
 
-class SignInSerializer(serializers.ModelSerializer):
-   
 
-    class Meta:
+
+class SignInSerializer(serializers.ModelSerializer):
+   class Meta:
         model = ExtendedUser
         fields = ['email', 'password']
