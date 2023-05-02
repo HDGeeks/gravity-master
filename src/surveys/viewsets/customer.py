@@ -2,7 +2,7 @@
 
 # rest framework imports
 from urllib import response
-
+from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -14,6 +14,7 @@ from surveys.utils import formatter
 
 from utils import responses 
 from utils import permissions as custom_permissions
+from rest_framework.response import Response
 
 class CustomerViewSet(viewsets.ModelViewSet):
 
@@ -144,8 +145,8 @@ class CustomerViewSet(viewsets.ModelViewSet):
             return responses.BadRequestErrorHandler("Customer does not exist")
         
         customerProjects = Project.objects.filter(customer = checkCustomer[0])
-        # if not customerProjects.exists():
-        #     return responses.BadRequestErrorHandler("")
+        if not customerProjects.exists():
+            return Response(" No projects exist for this customer " ,status=status.HTTP_200_OK)
         
         return responses.SuccessResponseHandler(
             True,

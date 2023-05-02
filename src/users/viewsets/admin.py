@@ -3,9 +3,13 @@ from django.db.models import Q
 
 # rest framework imports
 from rest_framework import viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action,api_view
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import AllowAny
+from django.contrib.auth import authenticate
+from rest_framework.response import Response
+from rest_framework import status
+
 
 
 # local imports
@@ -48,9 +52,12 @@ class AdminViewSet(viewsets.ModelViewSet):
         checkAdmin = ExtendedUser.objects.filter(
             role__role = 'Admin'
         )
+        username=request.data['email']
+        check_if_user_is_admin= ExtendedUser.objects.filter(username=username).filter(role=1).distinct()
 
-        if checkAdmin.exists():
+        if check_if_user_is_admin.exists():
             return responses.BadRequestErrorHandler("Admin account already exists")
+       
 
         # creates the admin account
         createdAdmin = ExtendedUser.objects.create(

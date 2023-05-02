@@ -8,7 +8,10 @@ class ExtendedUser(AbstractUser):
     email = models.EmailField(max_length=255,verbose_name='email')
     email_verified = models.BooleanField(default=False)
     middle_name = models.CharField(max_length=255)
-    role = models.ForeignKey('Role',on_delete= models.CASCADE,null=True)
+    role = models.ForeignKey('Role',related_name='users',on_delete= models.CASCADE,null=True)
+
+    def __str__(self):
+        return f"{self.email}"
 
 class Role(models.Model):
 
@@ -18,3 +21,6 @@ class Role(models.Model):
     )
 
     role = models.CharField(max_length=50,choices=ROLE_CHOICES, unique = True)
+
+    def __str__(self):
+        return self.role

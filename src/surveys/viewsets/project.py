@@ -5,6 +5,8 @@ from crypt import methods
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework import status
 
 # local imports
 from surveys.models import *
@@ -37,7 +39,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
         return responses.SuccessResponseHandler(
             True,
-            "Successfully found the customer data",
+            "Successfully found all the projects .",
             formatter.multipleProjectFormatter(projects)
         )
 
@@ -87,7 +89,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
         return responses.SuccessResponseHandler(
             True,
-            "Successfully Created the Customer",
+            "Successfully Created the Project .",
             formatter.singleProjectFormatter(createdProject)
         )
     
@@ -146,6 +148,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
             return responses.BadRequestErrorHandler("Project Not Found.")
         
         projectSurveys = Survey.objects.filter(project = checkProject[0])
+
+        if not projectSurveys.exists():
+            #return Response(" No surveys exist for this project . Please create surveys for it . " ,status=status.HTTP_200_OK)
+            return Response({
+                'success': False,
+                'message': 'No surveys exist for this project . Please create surveys for it .',
+               })
 
         return responses.SuccessResponseHandler(
             True,

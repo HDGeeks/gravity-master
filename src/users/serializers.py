@@ -17,3 +17,10 @@ class RoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExtendedUser
         fields = ('id','role')
+
+
+
+class SignInSerializer(serializers.ModelSerializer):
+   class Meta:
+        model = ExtendedUser
+        fields = ['email', 'password']
