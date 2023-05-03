@@ -14,6 +14,10 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
+  
+    #customer= serializers.StringRelatedField(many=True)
+    #customer = CustomerSerializer(many=True ,read_only=True)
+ 
     class Meta:
         model = Project
         fields = [

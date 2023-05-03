@@ -16,6 +16,8 @@ from surveys.utils import formatter
 
 from utils import responses
 from utils import permissions as custom_permissions
+from surveys.serializers import QuestionSerializer,SurveySerializer
+from rest_framework.response import Response
 
 # bucket_name = settings.AWS_SECRET_BUCKET_NAME
 # bucket_url = settings.AWS_BUCKET_URL
@@ -118,29 +120,40 @@ class SurveyViewSet(viewsets.ModelViewSet):
         # checks if questions is not empty
         if len(request.data["questions"]) == 0:
             return responses.BadRequestErrorHandler("questions can not be empty")
-        print("=============================================", request.data["status"])
+        # payload
+        data={
+            "project":request.data['project_id'],
+            "name":request.data["name"],
+            "description":request.data["description"],
+            "status":request.data["status"],}
+        
+        serializer = SurveySerializer(data=data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            #return Response(serializer.data)
+    
         # creates the survey
-        createdSurvey = Survey.objects.create(
-            project=checkProject[0],
-            name=request.data["name"],
-            description=request.data["description"],
-            status=request.data["status"],
-        )
+        # createdSurvey = Survey.objects.create(
+        #     project=checkProject[0],
+        #     name=request.data["name"],
+        #     description=request.data["description"],
+        #     status=request.data["status"],
+        # )
         # print(request.data['questions'])
         # request.data['questions'] is a list .Loop through it .
         for question in request.data["questions"]:
-            hasMultiple = False
-            isDependent = False
-            depQuestion = None
-            title = ""
-            isRequired = True
-            questionType = ""
-            questionOptions = None
-            audioURL = None
-            videoURL = None
-            imageURL = None
-            category = Category.objects.get(id=question["category_id"])
-            language = Language.objects.get(id=question["language_id"])
+        #     hasMultiple = False
+        #     isDependent = False
+        #     depQuestion = None
+        #     title = ""
+        #     isRequired = True
+        #     questionType = ""
+        #     questionOptions = None
+        #     audioURL = None
+        #     videoURL = None
+        #     imageURL = None
+        #     category = Category.objects.get(id=question["category_id"])
+        #     language = Language.objects.get(id=question["language_id"])
 
             if type(question) is not dict:
                 return responses.BadRequestErrorHandler(
@@ -246,23 +259,29 @@ class SurveyViewSet(viewsets.ModelViewSet):
                         "question isRequired must be boolean"
                     )
                 isRequired = question["isRequired"]
-            print("====================================", category)
-            print("====================================", language)
-            Question.objects.create(
-                survey=createdSurvey,
-                title=title,
-                category=category,
-                language=language,
-                hasMultipleAnswers=hasMultiple,
-                isRequired=isRequired,
-                type=questionType,
-                options=questionOptions,
-                audioURL=audioURL,
-                videoURL=videoURL,
-                imageURL=imageURL,
-                isDependent=isDependent,
-                depQuestion=depQuestion,
-            )
+
+            question_serializer = QuestionSerializer(data=question)
+            if question_serializer.is_valid(raise_exception=True):
+                question_serializer.save()
+                result={"survey":serializer.data,
+                        "question":question_serializer.data}
+                return Response(result)
+            # Question.objects.create(
+            #     survey=createdSurvey,
+            #     title=title,
+            #     category=category,
+            #     language=language,
+            #     hasMultipleAnswers=hasMultiple,
+            #     isRequired=isRequired,
+            #     type=questionType,
+            #     options=questionOptions,
+            #     audioURL=audioURL,
+            #     videoURL=videoURL,
+            #     imageURL=imageURL,
+            #     isDependent=isDependent,
+            #     depQuestion=depQuestion,
+            # )
+           
 
         # checks if the project exists
         return responses.SuccessResponseHandler(

@@ -20,23 +20,24 @@ from rest_framework.response import Response
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+    permission_classes=[custom_permissions.IsAdmin]
 
-    def get_permissions(self):
-        if self.action in [
-            "list",
-            "create",
-            "retrieve",
-            "update",
-            "partial_update",
-            "delete",
-            "destroy",
-            "getProjectsForCustomer",
-        ]:
-            permission_classes = [custom_permissions.IsAdmin]
-        else:
-            permission_classes = [AllowAny]
+    # def get_permissions(self):
+    #     if self.action in [
+    #         "list",
+    #         "create",
+    #         "retrieve",
+    #         "update",
+    #         "partial_update",
+    #         "delete",
+    #         "destroy",
+    #         "getProjectsForCustomer",
+    #     ]:
+    #         permission_classes = [custom_permissions.IsAdmin]
+    #     else:
+    #         permission_classes = [AllowAny]
 
-        return [permission() for permission in permission_classes]
+    #     return [permission() for permission in permission_classes]
 
     """
         Get all Customers endpoint

@@ -38,7 +38,7 @@ class Customer(CreationTimeStamp):
 
 
 class Project(CreationTimeStamp):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE,related_name='projects')
     name = models.CharField(max_length=200, unique=True)
     description = models.CharField(max_length=300)
     date = models.DateTimeField(auto_now=True)

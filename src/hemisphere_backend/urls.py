@@ -39,8 +39,8 @@ urlpatterns = [
     # root
     path("root/", api_root, name="root"),
     # defines the app urls created
-    path(r"users/", include(UserUrls)),
-    path(r"surveys/", include(SurveyUrls)),
+    path("users/", include(UserUrls)),
+    path("surveys/", include(SurveyUrls)),
     # defines the refresh token and common urls
     path("users/token/refresh/", TokenRefreshView.as_view(), name="refresh-token"),
     # API documentation urls

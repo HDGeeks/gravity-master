@@ -8,4 +8,4 @@ from utils import permissions as custom_permissions
 class LanguageViewSet(ModelViewSet):
     serializer_class = LanguageSerializer
     queryset = Language.objects.all()
-    permission_classes = [custom_permissions.IsAdmin]
+    #permission_classes = [custom_permissions.IsAdmin]
