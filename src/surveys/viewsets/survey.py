@@ -284,12 +284,12 @@ class SurveyViewSet(viewsets.ModelViewSet):
            
 
         # checks if the project exists
-        return responses.SuccessResponseHandler(
-            True,
-            "Successfully created a survey",
-            # None
-            formatter.singleSurveyWithQuestions(createdSurvey),
-        )
+        # return responses.SuccessResponseHandler(
+        #     True,
+        #     "Successfully created a survey",
+        #     # None
+        #     formatter.singleSurveyWithQuestions(result),
+        # )
 
     """
         Edit Survey Endpoint
