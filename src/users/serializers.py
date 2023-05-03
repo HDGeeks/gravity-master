@@ -1,4 +1,4 @@
-# django models 
+# django models
 
 # rest framework imports
 from rest_framework import serializers
@@ -6,21 +6,20 @@ from rest_framework import serializers
 # local imports
 from .models import *
 
-class UserSerializer(serializers.ModelSerializer):
 
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExtendedUser
-        fields = ('id','first_name','last_name','username','email','phone')
+        fields = ("id", "first_name", "last_name", "username", "email", "phone")
+
 
 class RoleSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = ExtendedUser
-        fields = ('id','role')
-
+        fields = ("id", "role")
 
 
 class SignInSerializer(serializers.ModelSerializer):
-   class Meta:
+    class Meta:
         model = ExtendedUser
-        fields = ['email', 'password']
+        fields = ["email", "password"]

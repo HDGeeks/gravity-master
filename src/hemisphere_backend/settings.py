@@ -75,8 +75,8 @@ REST_FRAMEWORK = {
 
 # declares the lifetime of the rest framework simple-jwt tokens
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=2),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=15),
 }
 
 MIDDLEWARE = [
