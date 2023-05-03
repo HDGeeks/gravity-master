@@ -40,12 +40,15 @@ def api_root(request, format=None):
             "surveys-list": reverse("surveys-list", request=request, format=format),
             "language-list": reverse("language-list", request=request, format=format),
             "category-list": reverse("category-list", request=request, format=format),
-            "questions-category-list": reverse("questions-category-list", request=request, format=format),
+            "questions-category-list": reverse(
+                "questions-category-list", request=request, format=format
+            ),
             "refresh-token": reverse("refresh-token", request=request, format=format),
             "admin-site": reverse("admin:login", request=request, format=format),
-
             # doc
-             "swagger-api-doc": reverse("schema-swagger-ui", request=request, format=format),
-             "redoc-api-doc": reverse("schema-redoc", request=request, format=format)
+            "swagger-api-doc": reverse(
+                "schema-swagger-ui", request=request, format=format
+            ),
+            "redoc-api-doc": reverse("schema-redoc", request=request, format=format),
         }
     )

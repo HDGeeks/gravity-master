@@ -35,20 +35,26 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(Survey)
 class SurveyAdmin(admin.ModelAdmin):
-    list_display = ("id","project", "name", "description", "status")
+    list_display = ("id", "project", "name", "description", "status")
     search_fields = ("name", "project__name")
     list_filter = ("project",)
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ("id","name",)
+    list_display = (
+        "id",
+        "name",
+    )
     search_fields = ("name",)
 
 
 @admin.register(Language)
 class LanguageAdmin(admin.ModelAdmin):
-    list_display = ("id","name",)
+    list_display = (
+        "id",
+        "name",
+    )
     search_fields = ("name",)
 
 
