@@ -18,6 +18,25 @@ class CreationTimeStamp(models.Model):
         abstract = True
         ordering = ["-created_at"]
 
+class Category(CreationTimeStamp):
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name_plural = "Categories"
+
+    def __str__(self):
+        return self.name
+
+
+class Language(CreationTimeStamp):
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name_plural = "Languages"
+
+    def __str__(self):
+        return self.name
+
 
 class Customer(CreationTimeStamp):
     name = models.CharField(max_length=200, unique=True)
@@ -65,6 +84,10 @@ class Survey(CreationTimeStamp):
     STATUS_CHOICES = (("ACTIVE", "ACTIVE"), ("INACTIVE", "INACTIVE"))
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    categories = models.ManyToManyField('Category', blank=True)
+    language = models.ForeignKey(
+        'Language', on_delete=models.CASCADE, blank=True, null=True
+    )
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=200)
     status = models.CharField(max_length=100, choices=STATUS_CHOICES, default="")
@@ -77,30 +100,14 @@ class Survey(CreationTimeStamp):
         indexes = [
             models.Index(fields=["name"], name="project"),
             models.Index(fields=["project"], name="project_id_idx"),
+            models.Index(fields=["language"], name="survey_language_idx"),
         ]
 
     def __str__(self):
         return self.name
 
 
-class Category(CreationTimeStamp):
-    name = models.CharField(max_length=100)
 
-    class Meta:
-        verbose_name_plural = "Categories"
-
-    def __str__(self):
-        return self.name
-
-
-class Language(CreationTimeStamp):
-    name = models.CharField(max_length=100)
-
-    class Meta:
-        verbose_name_plural = "Languages"
-
-    def __str__(self):
-        return self.name
 
 
 class Question(CreationTimeStamp):
@@ -112,14 +119,10 @@ class Question(CreationTimeStamp):
     category = models.ForeignKey(
         Category, on_delete=models.CASCADE, blank=True, null=True
     )
-    language = models.ForeignKey(
-        Language, on_delete=models.CASCADE, blank=True, null=True
-    )
     title = models.CharField(max_length=500)
     hasMultipleAnswers = models.BooleanField(default=False)
     isDependent = models.BooleanField(default=False)
     depends_on = models.ManyToManyField("self", null=True, blank=True)
-    dependent_questions = models.ManyToManyField("self", null=True, blank=True)
     depQuestion = models.JSONField(null=True)
     isRequired = models.BooleanField(default=True)
     type = models.CharField(
@@ -140,19 +143,23 @@ class Question(CreationTimeStamp):
         indexes = [
             models.Index(fields=["title"], name="title_idx"),
             models.Index(fields=["survey"], name="survey_id_idx"),
+            #models.Index(fields=["category"], name="category_id_idx"),
+        
         ]
 
     def __str__(self) -> str:
-        return self.title
+        if self.category:
+            return f"{self.title} ({self.category.name})"
+        else:
+            return self.title
 
-
-# class QuestionDependency(models.Model):
-#     parent = models.ForeignKey('Question', on_delete=models.CASCADE, related_name='dependent_questions')
-#     dependent = models.ForeignKey('Question', on_delete=models.CASCADE, related_name='parent_questions')
 
 
 class QuestionAnswer(CreationTimeStamp):
+    
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, blank=True, null=True)
     createdAt = models.DateTimeField(auto_now=True)
     responses = ArrayField(
         null=False, base_field=models.CharField(max_length=300, blank=True)
@@ -161,6 +168,9 @@ class QuestionAnswer(CreationTimeStamp):
 
     class Meta:
         verbose_name_plural = "QuestionAnswers"
+        indexes = [
+            models.Index(fields=["question"], name="question_id_idx"),
+            models.Index(fields=["category"], name="category_id_idx"),]
 
     def __str__(self) -> str:
         return self.question

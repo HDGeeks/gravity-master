@@ -2,6 +2,7 @@
 import re
 import boto3
 from django.conf import settings
+from django.forms import ValidationError
 
 # rest framework imports
 
@@ -36,30 +37,30 @@ class SurveyViewSet(viewsets.ModelViewSet):
     queryset = Survey.objects.all()
     serializer_class = SurveySerializer
 
-    def get_permissions(self):
-        if self.action in [
-            "list",
-            "create",
-            "update",
-            "partial_update",
-            "delete",
-            "destroy",
-            "addQuestionToSurvey",
-            "deleteQuestionsFromSurvey",
-            "deleteDataCollectorsFromSurvey",
-            "uploadFilesForSurvey",
-        ]:
-            permission_classes = [custom_permissions.IsAdmin]
-        elif self.action in ["retrieve"]:
-            permission_classes = [
-                custom_permissions.IsAdmin | custom_permissions.IsDataCollector
-            ]
-        elif self.action in ["answerSurvey"]:
-            permission_classes = [custom_permissions.IsDataCollector]
-        else:
-            permission_classes = [AllowAny]
+    # def get_permissions(self):
+    #     if self.action in [
+    #         "list",
+    #         "create",
+    #         "update",
+    #         "partial_update",
+    #         "delete",
+    #         "destroy",
+    #         "addQuestionToSurvey",
+    #         "deleteQuestionsFromSurvey",
+    #         "deleteDataCollectorsFromSurvey",
+    #         "uploadFilesForSurvey",
+    #     ]:
+    #         permission_classes = [custom_permissions.IsAdmin]
+    #     elif self.action in ["retrieve"]:
+    #         permission_classes = [
+    #             custom_permissions.IsAdmin | custom_permissions.IsDataCollector
+    #         ]
+    #     elif self.action in ["answerSurvey"]:
+    #         permission_classes = [custom_permissions.IsDataCollector]
+    #     else:
+    #         permission_classes = [AllowAny]
 
-        return [permission() for permission in permission_classes]
+    #     return [permission() for permission in permission_classes]
 
     """
         Get Surveys endpoint
@@ -125,12 +126,23 @@ class SurveyViewSet(viewsets.ModelViewSet):
             "project":request.data['project_id'],
             "name":request.data["name"],
             "description":request.data["description"],
-            "status":request.data["status"],}
+            "status":request.data["status"],
+            "dataCollectors":request.data["dataCollectors"],
+            "language":request.data["language"],
+            "categories":request.data["categories"]
+            }
+        
+        # survey = Survey(**data)
+        # survey.save()
+        # data_collectors = request.data["dataCollectors"]
+
+        # survey.dataCollectors.set(data_collectors)
+        
         
         serializer = SurveySerializer(data=data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            #return Response(serializer.data)
+            return Response(serializer.data)
     
         # creates the survey
         # createdSurvey = Survey.objects.create(
@@ -323,8 +335,10 @@ class SurveyViewSet(viewsets.ModelViewSet):
         # checks if questions is not empty
         if len(request.data["questions"]) == 0:
             return responses.BadRequestErrorHandler("questions can not be empty")
+        
+       
 
-        # updates the survey
+        #updates the survey
         checkSurvey.update(
             project=checkProject[0],
             name=request.data["name"],
@@ -401,6 +415,7 @@ class SurveyViewSet(viewsets.ModelViewSet):
                     )
                 isRequired = question["isRequired"]
 
+         
             checkQuestion.update(
                 survey=checkSurvey[0],
                 title=title,

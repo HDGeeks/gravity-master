@@ -63,7 +63,6 @@ class QuestionAdmin(admin.ModelAdmin):
     list_display = (
         "survey",
         "category",
-        "language",
         "title",
         "hasMultipleAnswers",
         "isDependent",
@@ -71,7 +70,7 @@ class QuestionAdmin(admin.ModelAdmin):
         "type",
     )
     search_fields = ("title", "survey__name")
-    list_filter = ("survey", "category", "language", "type")
+    list_filter = ("survey", "category","type")
 
 
 @admin.register(QuestionAnswer)
