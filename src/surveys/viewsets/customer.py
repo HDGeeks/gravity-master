@@ -20,7 +20,7 @@ from rest_framework.response import Response
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    #permission_classes=[custom_permissions.IsAdmin]
+    # permission_classes=[custom_permissions.IsAdmin]
 
     # def get_permissions(self):
     #     if self.action in [

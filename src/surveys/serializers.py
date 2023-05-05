@@ -6,6 +6,7 @@ from rest_framework import serializers
 # local imports
 from .models import *
 
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -17,6 +18,7 @@ class LanguageSerializer(serializers.ModelSerializer):
         model = Language
         fields = ["id", "name"]
 
+
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
@@ -24,7 +26,6 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
- 
     class Meta:
         model = Project
         fields = [
@@ -55,43 +56,38 @@ class SurveySerializer(serializers.ModelSerializer):
         model = Survey
         fields = "__all__"
 
-    def create(self, validated_data):
-        data_collectors_data = validated_data.pop("dataCollectors", [])
-        language_name = validated_data.pop("language", None)
-        if language_name:
-            language, created = Language.objects.get_or_create(name=language_name)
-            validated_data["language"] = language
-            
-        categories_data = validated_data.pop("categories", [])
-        survey = Survey.objects.create(**validated_data)
+    # def create(self, validated_data):
+    #     data_collectors_data = validated_data.pop("dataCollectors", [])
+    #     language_name = validated_data.pop("language", None)
+    #     if language_name:
+    #         language, created = Language.objects.get_or_create(name=language_name)
+    #         validated_data["language"] = language
 
-        for category_name in categories_data:
-            category, created = Category.objects.get_or_create(name=category_name)
-            survey.categories.add(category)
+    #     categories_data = validated_data.pop("categories", [])
+    #     survey = Survey.objects.create(**validated_data)
 
-        for data_collector in data_collectors_data:
-            survey.dataCollectors.add(data_collector)
+    #     for category_name in categories_data:
+    #         category, created = Category.objects.get_or_create(name=category_name)
+    #         survey.categories.add(category)
 
-        return survey
+    #     for data_collector in data_collectors_data:
+    #         survey.dataCollectors.add(data_collector)
 
-
+    #     return survey
 
 
 class QuestionSerializer(serializers.ModelSerializer):
-    #category = serializers.CharField()
+    # category = serializers.CharField()
 
     class Meta:
         model = Question
         fields = "__all__"
 
-    def create(self, validated_data):
-        category_name = validated_data.pop("category", None)
-        if category_name:
-            category, created = Category.objects.get_or_create(name=category_name)
-            validated_data["category"] = category
-        question = Question.objects.create(**validated_data)
-        return question
+    # def create(self, validated_data):
+    #     category_name = validated_data.pop("category", None)
 
-
-
-
+    #     question = Question.objects.create(**validated_data)
+    #     if category_name:
+    #         category, created = Category.objects.get_or_create(name=category_name)
+    #         validated_data["category"] = category
+    #     return question

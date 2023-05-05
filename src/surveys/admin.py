@@ -61,6 +61,7 @@ class LanguageAdmin(admin.ModelAdmin):
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "survey",
         "category",
         "title",
@@ -70,7 +71,7 @@ class QuestionAdmin(admin.ModelAdmin):
         "type",
     )
     search_fields = ("title", "survey__name")
-    list_filter = ("survey", "category","type")
+    list_filter = ("survey", "category", "type")
 
 
 @admin.register(QuestionAnswer)

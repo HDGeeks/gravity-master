@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.db.models import Subquery, OuterRef
+from users.models import Role
 
 # import PlainLocationfield model field
 from location_field.models.plain import PlainLocationField
@@ -16,7 +18,8 @@ class CreationTimeStamp(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ["-created_at"]
+        # ordering = ["created_at"]
+
 
 class Category(CreationTimeStamp):
     name = models.CharField(max_length=100)
@@ -57,7 +60,9 @@ class Customer(CreationTimeStamp):
 
 
 class Project(CreationTimeStamp):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE,related_name='projects')
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE, related_name="projects"
+    )
     name = models.CharField(max_length=200, unique=True)
     description = models.CharField(max_length=300)
     date = models.DateTimeField(auto_now=True)
@@ -84,14 +89,15 @@ class Survey(CreationTimeStamp):
     STATUS_CHOICES = (("ACTIVE", "ACTIVE"), ("INACTIVE", "INACTIVE"))
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    categories = models.ManyToManyField('Category', blank=True)
+    categories = models.ManyToManyField("Category", blank=True)
     language = models.ForeignKey(
-        'Language', on_delete=models.CASCADE, blank=True, null=True
+        "Language", on_delete=models.CASCADE, blank=True, null=True
     )
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=200)
     status = models.CharField(max_length=100, choices=STATUS_CHOICES, default="")
     dataCollectors = models.ManyToManyField(ExtendedUser)
+
     # limit_choices_to={'role': 'data_collector'}
 
     class Meta:
@@ -105,9 +111,6 @@ class Survey(CreationTimeStamp):
 
     def __str__(self):
         return self.name
-
-
-
 
 
 class Question(CreationTimeStamp):
@@ -143,8 +146,7 @@ class Question(CreationTimeStamp):
         indexes = [
             models.Index(fields=["title"], name="title_idx"),
             models.Index(fields=["survey"], name="survey_id_idx"),
-            #models.Index(fields=["category"], name="category_id_idx"),
-        
+            # models.Index(fields=["category"], name="category_id_idx"),
         ]
 
     def __str__(self) -> str:
@@ -154,12 +156,11 @@ class Question(CreationTimeStamp):
             return self.title
 
 
-
 class QuestionAnswer(CreationTimeStamp):
-    
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     category = models.ForeignKey(
-        Category, on_delete=models.CASCADE, blank=True, null=True)
+        Category, on_delete=models.CASCADE, blank=True, null=True
+    )
     createdAt = models.DateTimeField(auto_now=True)
     responses = ArrayField(
         null=False, base_field=models.CharField(max_length=300, blank=True)
@@ -170,7 +171,8 @@ class QuestionAnswer(CreationTimeStamp):
         verbose_name_plural = "QuestionAnswers"
         indexes = [
             models.Index(fields=["question"], name="question_id_idx"),
-            models.Index(fields=["category"], name="category_id_idx"),]
+            models.Index(fields=["category"], name="category_id_idx"),
+        ]
 
     def __str__(self) -> str:
         return self.question

@@ -17,7 +17,7 @@ from surveys.utils import formatter
 
 from utils import responses
 from utils import permissions as custom_permissions
-from surveys.serializers import QuestionSerializer,SurveySerializer
+from surveys.serializers import QuestionSerializer, SurveySerializer
 from rest_framework.response import Response
 
 # bucket_name = settings.AWS_SECRET_BUCKET_NAME
@@ -62,11 +62,12 @@ class SurveyViewSet(viewsets.ModelViewSet):
 
     #     return [permission() for permission in permission_classes]
 
-    """
-        Get Surveys endpoint
-    """
+    # """
+    #     Get Surveys endpoint
+    # """
 
     def list(self, request, format=None):
+        # return Response(self.queryset.values())
         surveys = Survey.objects.all()
 
         return responses.SuccessResponseHandler(
@@ -101,10 +102,14 @@ class SurveyViewSet(viewsets.ModelViewSet):
             or not "status"
             or not "description"
             or not "project_id"
+            or not "language"
+            or not "categories"
             or not "questions" in request.data.keys()
         ):
             return responses.BadRequestErrorHandler("All required fields must be input")
 
+        if Survey.objects.filter(name=request.data["name"]).exists():
+            raise ValidationError("A survey with this name already exists.")
         # checks if the project exists
         checkProject = Project.objects.filter(pk=request.data["project_id"])
         if not checkProject.exists():
@@ -122,28 +127,22 @@ class SurveyViewSet(viewsets.ModelViewSet):
         if len(request.data["questions"]) == 0:
             return responses.BadRequestErrorHandler("questions can not be empty")
         # payload
-        data={
-            "project":request.data['project_id'],
-            "name":request.data["name"],
-            "description":request.data["description"],
-            "status":request.data["status"],
-            "dataCollectors":request.data["dataCollectors"],
-            "language":request.data["language"],
-            "categories":request.data["categories"]
-            }
-        
-        # survey = Survey(**data)
-        # survey.save()
-        # data_collectors = request.data["dataCollectors"]
+        data = {
+            "project": request.data["project_id"],
+            "name": request.data["name"],
+            "description": request.data["description"],
+            "status": request.data["status"],
+            "dataCollectors": request.data["dataCollectors"],
+            "language": request.data["language"],
+            "categories": request.data["categories"],
+        }
 
-        # survey.dataCollectors.set(data_collectors)
-        
-        
-        serializer = SurveySerializer(data=data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
-    
+        # do the saving , using serializers
+        surevy_serializer = SurveySerializer(data=data)
+        if surevy_serializer.is_valid(raise_exception=True):
+            surevy_serializer.save()
+            # return Response(surevy_serializer.data)
+
         # creates the survey
         # createdSurvey = Survey.objects.create(
         #     project=checkProject[0],
@@ -153,24 +152,27 @@ class SurveyViewSet(viewsets.ModelViewSet):
         # )
         # print(request.data['questions'])
         # request.data['questions'] is a list .Loop through it .
-        for question in request.data["questions"]:
-        #     hasMultiple = False
-        #     isDependent = False
-        #     depQuestion = None
-        #     title = ""
-        #     isRequired = True
-        #     questionType = ""
-        #     questionOptions = None
-        #     audioURL = None
-        #     videoURL = None
-        #     imageURL = None
-        #     category = Category.objects.get(id=question["category_id"])
-        #     language = Language.objects.get(id=question["language_id"])
 
+        for question in request.data["questions"]:
+            # hasMultiple = False
+            # isDependent = False
+            # depQuestion = None
+            # title = ""
+            # isRequired = True
+            # questionType = ""
+            # questionOptions = None
+            # audioURL = None
+            # videoURL = None
+            # imageURL = None
+            # category = Category.objects.get(id=question["category_id"])
+            # language = Language.objects.get(id=question["language_id"])
+
+            # check if question is dict
             if type(question) is not dict:
                 return responses.BadRequestErrorHandler(
                     "All question elements must be an object"
                 )
+            # check if len is not zero
             if len(question) == 0:
                 return responses.BadRequestErrorHandler(
                     "Each Question must be non-empty"
@@ -275,9 +277,13 @@ class SurveyViewSet(viewsets.ModelViewSet):
             question_serializer = QuestionSerializer(data=question)
             if question_serializer.is_valid(raise_exception=True):
                 question_serializer.save()
-                result={"survey":serializer.data,
-                        "question":question_serializer.data}
-                return Response(result)
+
+                result = {
+                    "survey": surevy_serializer.data,
+                    "question": question_serializer.data,
+                }
+                return Response(result, status=200)
+
             # Question.objects.create(
             #     survey=createdSurvey,
             #     title=title,
@@ -293,7 +299,6 @@ class SurveyViewSet(viewsets.ModelViewSet):
             #     isDependent=isDependent,
             #     depQuestion=depQuestion,
             # )
-           
 
         # checks if the project exists
         # return responses.SuccessResponseHandler(
@@ -335,10 +340,8 @@ class SurveyViewSet(viewsets.ModelViewSet):
         # checks if questions is not empty
         if len(request.data["questions"]) == 0:
             return responses.BadRequestErrorHandler("questions can not be empty")
-        
-       
 
-        #updates the survey
+        # updates the survey
         checkSurvey.update(
             project=checkProject[0],
             name=request.data["name"],
@@ -415,7 +418,6 @@ class SurveyViewSet(viewsets.ModelViewSet):
                     )
                 isRequired = question["isRequired"]
 
-         
             checkQuestion.update(
                 survey=checkSurvey[0],
                 title=title,

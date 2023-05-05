@@ -20,7 +20,7 @@ from utils import permissions as custom_permissions
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-    #permission_classes=[custom_permissions.IsAdmin]
+    permission_classes = [custom_permissions.IsAdmin]
 
     # def get_permissions(self):
     #     if self.action in [
@@ -82,16 +82,14 @@ class ProjectViewSet(viewsets.ModelViewSet):
             or not "budget" in request.data.keys()
         ):
             return responses.BadRequestErrorHandler("All required fields must be input")
-      
 
- 
         # checks the project with the name already exists
         checkProject = Project.objects.filter(name=request.data["name"])
         if checkProject.exists():
             return responses.BadRequestErrorHandler("Project already exists")
 
         # checks the customer with the id
-        checkCustomer = Customer.objects.filter(pk=request.data["customer"])
+        checkCustomer = Customer.objects.filter(pk=request.data["customer_id"])
         if not checkCustomer.exists():
             return responses.BadRequestErrorHandler("Customer not found")
 
