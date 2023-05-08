@@ -48,32 +48,11 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class SurveySerializer(serializers.ModelSerializer):
-    # language = serializers.CharField()
-    # categories = serializers.ListField(child=serializers.CharField())
-    # dataCollectors = serializers.PrimaryKeyRelatedField(queryset=ExtendedUser.objects.all(), many=True)
-
     class Meta:
         model = Survey
         fields = "__all__"
 
-    # def create(self, validated_data):
-    #     data_collectors_data = validated_data.pop("dataCollectors", [])
-    #     language_name = validated_data.pop("language", None)
-    #     if language_name:
-    #         language, created = Language.objects.get_or_create(name=language_name)
-    #         validated_data["language"] = language
-
-    #     categories_data = validated_data.pop("categories", [])
-    #     survey = Survey.objects.create(**validated_data)
-
-    #     for category_name in categories_data:
-    #         category, created = Category.objects.get_or_create(name=category_name)
-    #         survey.categories.add(category)
-
-    #     for data_collector in data_collectors_data:
-    #         survey.dataCollectors.add(data_collector)
-
-    #     return survey
+   
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -84,10 +63,13 @@ class QuestionSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     # def create(self, validated_data):
-    #     category_name = validated_data.pop("category", None)
-
-    #     question = Question.objects.create(**validated_data)
-    #     if category_name:
-    #         category, created = Category.objects.get_or_create(name=category_name)
-    #         validated_data["category"] = category
-    #     return question
+    #     category_data = validated_data.pop('category')
+    #     #category_name = category_data.get('name')
+    #     category = Category.objects.get_or_create(name=category_data)
+    #     print("================================",category_data)
+    #     print("================================",category)
+        
+        
+        # validated_data['category'] = category.pk
+        # question = Question.objects.create(**validated_data)
+        # return question

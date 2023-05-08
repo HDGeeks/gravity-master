@@ -20,24 +20,24 @@ from utils import permissions as custom_permissions
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-    permission_classes = [custom_permissions.IsAdmin]
+    #permission_classes = [custom_permissions.IsAdmin]
 
-    # def get_permissions(self):
-    #     if self.action in [
-    #         "list",
-    #         "create",
-    #         "retrieve",
-    #         "update",
-    #         "partial_update",
-    #         "delete",
-    #         "destroy",
-    #         "getSurveysForProject",
-    #     ]:
-    #         permission_classes = [custom_permissions.IsAdmin]
-    #     else:
-    #         permission_classes = [AllowAny]
+    def get_permissions(self):
+        if self.action in [
+            "list",
+            "create",
+            "retrieve",
+            "update",
+            "partial_update",
+            "delete",
+            "destroy",
+            "getSurveysForProject",
+        ]:
+            permission_classes = [custom_permissions.IsAdmin]
+        else:
+            permission_classes = [AllowAny]
 
-    #     return [permission() for permission in permission_classes]
+        return [permission() for permission in permission_classes]
 
     """
         Get all Projects endpoint

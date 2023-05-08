@@ -50,6 +50,6 @@ def api_root(request, format=None):
                 "schema-swagger-ui", request=request, format=format
             ),
             "redoc-api-doc": reverse("schema-redoc", request=request, format=format),
-            "new-sur-list": reverse("new-sur-list", request=request, format=format),
+            
         }
     )

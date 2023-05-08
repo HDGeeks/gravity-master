@@ -77,17 +77,17 @@ def singleSurveyFormatter(survey):
     singleSurvey["status"] = survey.status
     singleSurvey["language"] = survey.language
 
-    singleSurvey["language"] = survey.language.name
+    
 
-    all_categories = []
-    for cat in survey.categories.all():
-        singleCategory = {}
-        singleCategory["name"] = cat.name
-        singleCategory["id"] = cat.id
+    # all_categories = []
+    # for cat in survey.categories.all():
+    #     singleCategory = {}
+    #     singleCategory["name"] = cat.name
+    #     singleCategory["id"] = cat.id
 
-        all_categories.append(singleCategory)
+    #     all_categories.append(singleCategory)
 
-    singleSurvey["categories"] = all_categories
+    # singleSurvey["categories"] = all_categories
 
     allDataCollectors = []
     for user in survey.dataCollectors.all():
@@ -116,17 +116,17 @@ def multipleSurveyFormatter(surveys):
         singleSurvey["description"] = survey.description
         singleSurvey["status"] = survey.status
 
-        singleSurvey["language"] = survey.language.name
+        singleSurvey["language"] = survey.language
 
-        all_categories = []
-        for cat in survey.categories.all():
-            singleCategory = {}
-            singleCategory["name"] = cat.name
-            singleCategory["id"] = cat.id
+        # all_categories = []
+        # for cat in survey.categories.all():
+        #     singleCategory = {}
+        #     singleCategory["name"] = cat.name
+        #     singleCategory["id"] = cat.id
 
-            all_categories.append(singleCategory)
+        #     all_categories.append(singleCategory)
 
-        singleSurvey["categories"] = all_categories
+        # singleSurvey["categories"] = all_categories
 
         allDataCollectors = []
         for user in survey.dataCollectors.all():
@@ -153,17 +153,9 @@ def singleSurveyWithQuestions(survey):
     singleSurvey["project_name"] = survey.project.name
     singleSurvey["description"] = survey.description
     singleSurvey["status"] = survey.status
-    singleSurvey["language"] = survey.language.name
+    singleSurvey["language"] = survey.language
 
-    all_categories = []
-    for cat in survey.categories.all():
-        singleCategory = {}
-        singleCategory["name"] = cat.name
-        singleCategory["id"] = cat.id
-
-        all_categories.append(singleCategory)
-
-    singleSurvey["categories"] = all_categories
+   
 
     allDataCollectors = []
     for user in survey.dataCollectors.all():
@@ -204,7 +196,17 @@ def singleSurveyWithQuestions(survey):
 
         all_categories.append(singleCategory)
 
-        singleQuestion["categories"] = all_categories
+        singleQuestion["category"] = all_categories
+
+        depends_on = []
+        for que in question.depends_on.all():
+            depend = {}
+            depend["title"] = que.title
+            depend["id"] = que.id
+
+            depends_on.append(depend)
+
+        singleQuestion["depends_on"] = depends_on
         singleQuestion["answers"] = questionAnswerFormatter(question.pk)
 
         singleSurvey["questions"].append(singleQuestion)
@@ -243,6 +245,25 @@ def multipleQuestionFormatter(questions):
         singleQuestion["audioURL"] = question.audioURL
         singleQuestion["imageURL"] = question.imageURL
         singleQuestion["videoURL"] = question.videoURL
+        all_categories = []
+
+        singleCategory = {}
+        singleCategory["name"] = question.category.name
+        singleCategory["id"] = question.category.pk
+
+        all_categories.append(singleCategory)
+
+        singleQuestion["category"] = all_categories
+
+        depends_on = []
+        for que in question.depends_on.all():
+            depend = {}
+            depend["title"] = que.title
+            depend["id"] = que.id
+
+            depends_on.append(depend)
+
+        singleQuestion["depends_on"] = depends_on
 
         allQuestions.append(singleQuestion)
 

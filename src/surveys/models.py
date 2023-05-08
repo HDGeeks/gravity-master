@@ -72,11 +72,7 @@ class Project(CreationTimeStamp):
 
     class Meta:
         verbose_name_plural = "Projects"
-        # unique_together = ('name', 'customer')
-        # indexes = [
-        #     models.Index(fields=['name'], name='customer_name_idx'),
-        #     models.Index(fields=['customer'], name='customer_id_idx'),
-        #     ]
+        
 
     def __str__(self):
         return self.name
@@ -87,18 +83,20 @@ class Project(CreationTimeStamp):
 
 class Survey(CreationTimeStamp):
     STATUS_CHOICES = (("ACTIVE", "ACTIVE"), ("INACTIVE", "INACTIVE"))
-
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    categories = models.ManyToManyField("Category", blank=True)
-    language = models.ForeignKey(
-        "Language", on_delete=models.CASCADE, blank=True, null=True
+    LANGUAGE_CHOICES = (
+        ("AMHARIC", "Amharic"),
+        ("OROMO", "Oromo"),
+        ("TIGRIGNA", "Tigrigna"),
+        ("SOMALI", "Somali"),
+        ("AFAR", "Afar"),
     )
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=255,blank=False,null=False)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE,null=False,blank=False)
+    #categories = models.ManyToManyField("Category", blank=True)
+    language = models.CharField(max_length=100, choices=LANGUAGE_CHOICES,default="Amharic")
     description = models.CharField(max_length=200)
     status = models.CharField(max_length=100, choices=STATUS_CHOICES, default="")
     dataCollectors = models.ManyToManyField(ExtendedUser)
-
-    # limit_choices_to={'role': 'data_collector'}
 
     class Meta:
         verbose_name_plural = "Surveys"
@@ -125,7 +123,7 @@ class Question(CreationTimeStamp):
     title = models.CharField(max_length=500)
     hasMultipleAnswers = models.BooleanField(default=False)
     isDependent = models.BooleanField(default=False)
-    depends_on = models.ManyToManyField("self", null=True, blank=True)
+    depends_on = models.ManyToManyField("self",  blank=True)
     depQuestion = models.JSONField(null=True)
     isRequired = models.BooleanField(default=True)
     type = models.CharField(

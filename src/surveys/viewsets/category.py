@@ -24,7 +24,7 @@ class QuestionByCategoryAndLanguage(ModelViewSet):
         # Step 1: Retrieve the category_id and survey_id from the query parameters
         category_id = request.query_params.get("category")
         survey_id = request.query_params.get("survey")
-        print('============================ >',survey_id)
+     
 
         # Step 2: Get the queryset for the Question model
         queryset = self.queryset
@@ -41,25 +41,25 @@ class QuestionByCategoryAndLanguage(ModelViewSet):
         
         else:
 
-            # Step 4: If a survey_id is provided, find the survey and retrieve the list of related category IDs
-            try:
-                unit_survey = Survey.objects.filter(id=survey_id).values("categories__id")
-                categories_list = []
+            # # Step 4: If a survey_id is provided, find the survey and retrieve the list of related category IDs
+            # try:
+            #     unit_survey = Survey.objects.filter(id=survey_id).values("categories__id")
+            #     categories_list = []
 
-                for survey in unit_survey:
-                    categories_list.append(survey["categories__id"])
+            #     for survey in unit_survey:
+            #         categories_list.append(survey["categories__id"])
 
-            except Exception as e:
-                return Response(str(e), status=404)
+            # except Exception as e:
+            #     return Response(str(e), status=404)
 
-            print(category_id)
-            print(categories_list)
+            # print(category_id)
+            # print(categories_list)
 
-            # Step 5: If a category_id is provided, check if it exists in the categories_list from step 4
-            if int(category_id) not in categories_list:
-                return Response(
-                    "The passed category does not belong to this survey.", status=400
-                )
+            # # Step 5: If a category_id is provided, check if it exists in the categories_list from step 4
+            # if int(category_id) not in categories_list:
+            #     return Response(
+            #         "The passed category does not belong to this survey.", status=400
+            #     )
 
             # Step 6: Check if the provided category_id exists in the Question model
             try:

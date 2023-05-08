@@ -22,22 +22,22 @@ class CustomerViewSet(viewsets.ModelViewSet):
     serializer_class = CustomerSerializer
     # permission_classes=[custom_permissions.IsAdmin]
 
-    # def get_permissions(self):
-    #     if self.action in [
-    #         "list",
-    #         "create",
-    #         "retrieve",
-    #         "update",
-    #         "partial_update",
-    #         "delete",
-    #         "destroy",
-    #         "getProjectsForCustomer",
-    #     ]:
-    #         permission_classes = [custom_permissions.IsAdmin]
-    #     else:
-    #         permission_classes = [AllowAny]
+    def get_permissions(self):
+        if self.action in [
+            "list",
+            "create",
+            "retrieve",
+            "update",
+            "partial_update",
+            "delete",
+            "destroy",
+            "getProjectsForCustomer",
+        ]:
+            permission_classes = [custom_permissions.IsAdmin]
+        else:
+            permission_classes = [AllowAny]
 
-    #     return [permission() for permission in permission_classes]
+        return [permission() for permission in permission_classes]
 
     """
         Get all Customers endpoint
