@@ -22,47 +22,47 @@ from rest_framework.response import Response
 from surveys.models import Category
 from rest_framework import status
 
-# bucket_name = settings.AWS_SECRET_BUCKET_NAME
-# bucket_url = settings.AWS_BUCKET_URL
+bucket_name = settings.AWS_SECRET_BUCKET_NAME
+bucket_url = settings.AWS_BUCKET_URL
 
-# session = boto3.session.Session()
+session = boto3.session.Session()
 
-# client_s3 = session.client(
-#     's3',
-#     region_name = settings.AWS_REGION_NAME,
-#     aws_access_key_id = settings.AWS_ACCESS_KEY_ID,
-#     aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY
-# )
+client_s3 = session.client(
+    's3',
+    region_name = settings.AWS_REGION_NAME,
+    aws_access_key_id = settings.AWS_ACCESS_KEY_ID,
+    aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY
+)
 
 
 class SurveyViewSet(viewsets.ModelViewSet):
     queryset = Survey.objects.all()
     serializer_class = SurveySerializer
 
-    # def get_permissions(self):
-    #     if self.action in [
-    #         "list",
-    #         "create",
-    #         "update",
-    #         "partial_update",
-    #         "delete",
-    #         "destroy",
-    #         "addQuestionToSurvey",
-    #         "deleteQuestionsFromSurvey",
-    #         "deleteDataCollectorsFromSurvey",
-    #         "uploadFilesForSurvey",
-    #     ]:
-    #         permission_classes = [custom_permissions.IsAdmin]
-    #     elif self.action in ["retrieve"]:
-    #         permission_classes = [
-    #             custom_permissions.IsAdmin | custom_permissions.IsDataCollector
-    #         ]
-    #     elif self.action in ["answerSurvey"]:
-    #         permission_classes = [custom_permissions.IsDataCollector]
-    #     else:
-    #         permission_classes = [AllowAny]
+    def get_permissions(self):
+        if self.action in [
+            "list",
+            "create",
+            "update",
+            "partial_update",
+            "delete",
+            "destroy",
+            "addQuestionToSurvey",
+            "deleteQuestionsFromSurvey",
+            "deleteDataCollectorsFromSurvey",
+            "uploadFilesForSurvey",
+        ]:
+            permission_classes = [custom_permissions.IsAdmin]
+        elif self.action in ["retrieve"]:
+            permission_classes = [
+                custom_permissions.IsAdmin | custom_permissions.IsDataCollector
+            ]
+        elif self.action in ["answerSurvey"]:
+            permission_classes = [custom_permissions.IsDataCollector]
+        else:
+            permission_classes = [AllowAny]
 
-    #     return [permission() for permission in permission_classes]
+        return [permission() for permission in permission_classes]
 
     # """
     #     Get Surveys endpoint

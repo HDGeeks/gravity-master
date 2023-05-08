@@ -7,15 +7,15 @@ env = environ.Env()
 
 environ.Env.read_env()
 
-# # aws credentials
-# AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY')
-# AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS')
-# AWS_SECRET_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
-# AWS_REGION_NAME = env('AWS_region')
-# AWS_BUCKET_URL = env('AWS_bucket_url')
+# aws credentials
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY')
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS')
+AWS_SECRET_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+AWS_REGION_NAME = env('AWS_region')
+AWS_BUCKET_URL = env('AWS_bucket_url')
 
-# # mapbox credentials
-# MAPBOX_TOKEN = env('Mapbox_token')
+# mapbox credentials
+MAPBOX_TOKEN = env('Mapbox_token')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -54,11 +54,12 @@ INSTALLED_APPS = [
     "drf_yasg",
 ]
 
-# LOCATION_FIELD = {
-#     'provider.mapbox.access_token': MAPBOX_TOKEN,
-#     'provider.mapbox.max_zoom': 13,
-#     'provider.mapbox.id': 'mapbox.streets',
-# }
+LOCATION_FIELD = {
+    'provider.mapbox.access_token': MAPBOX_TOKEN,
+    'provider.mapbox.max_zoom': 13,
+    'provider.mapbox.id': 'mapbox.streets',
+}
+
 SWAGGER_SETTINGS = {
     "SECURITY_DEFINITIONS": {
         "Basic": {"type": "basic"},

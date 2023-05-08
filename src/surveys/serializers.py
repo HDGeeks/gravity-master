@@ -62,14 +62,4 @@ class QuestionSerializer(serializers.ModelSerializer):
         model = Question
         fields = "__all__"
 
-    # def create(self, validated_data):
-    #     category_data = validated_data.pop('category')
-    #     #category_name = category_data.get('name')
-    #     category = Category.objects.get_or_create(name=category_data)
-    #     print("================================",category_data)
-    #     print("================================",category)
-        
-        
-        # validated_data['category'] = category.pk
-        # question = Question.objects.create(**validated_data)
-        # return question
+   

@@ -13,14 +13,14 @@ from utils import responses
 class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    # permission_classes=custom_permissions.IsAdmin
+    permission_classes=custom_permissions.IsAdmin
 
 
 class QuestionByCategoryAndLanguage(ModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
     http_method_names = ["get"]
-    # permission_classes=[IsAuthenticated]
+    permission_classes=[IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
         # Step 1: Retrieve the category_id and survey_id from the query parameters
