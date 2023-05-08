@@ -6,6 +6,8 @@ from utils import permissions as custom_permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from surveys.models import Survey
+from surveys.utils.formatter import multipleQuestionFormatter
+from utils import responses
 
 
 class CategoryViewSet(ModelViewSet):
@@ -22,7 +24,7 @@ class QuestionByCategoryAndLanguage(ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         # Step 1: Retrieve the category_id and survey_id from the query parameters
-        category_id = request.query_params.get("category")
+        category_name = request.query_params.get("category")
         survey_id = request.query_params.get("survey")
      
 
@@ -30,18 +32,62 @@ class QuestionByCategoryAndLanguage(ModelViewSet):
         queryset = self.queryset
 
         # Step 3: If no category_id and survey_id are provided, return all questions
-        if not category_id and not survey_id:
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
         
-        elif survey_id and not category_id:
+        if not category_name and not survey_id:
+            return responses.SuccessResponseHandler(
+            True,
+            "Successfully found the survey data",
+            multipleQuestionFormatter(queryset),
+        )
+            
+           
+        
+        elif survey_id and not category_name:
             queryset = queryset.filter(survey__id=survey_id)
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return responses.SuccessResponseHandler(
+            True,
+            "Successfully found the survey data",
+            multipleQuestionFormatter(queryset),
+        )
         
         else:
 
-            # # Step 4: If a survey_id is provided, find the survey and retrieve the list of related category IDs
+            
+            try:
+                check_category_existence = (
+                    queryset.filter(category__name=category_name).values("category").exists()
+                )
+            except Exception as e:
+                return Response(str(e), status=404)
+
+            if not check_category_existence:
+                return Response(
+                    "There are no questions for the provided category.", status=400
+                )
+
+            # Step 7: Filter the queryset by survey_id and category_id
+            if survey_id:
+                queryset = queryset.filter(survey__id=survey_id)
+            if category_name:
+                queryset = queryset.filter(category__name=category_name)
+
+            return responses.SuccessResponseHandler(
+            True,
+            "Successfully found the survey data",
+            multipleQuestionFormatter(queryset),
+        )
+
+          
+
+
+
+
+
+
+
+
+
+# # Step 4: If a survey_id is provided, find the survey and retrieve the list of related category IDs
             # try:
             #     unit_survey = Survey.objects.filter(id=survey_id).values("categories__id")
             #     categories_list = []
@@ -62,24 +108,3 @@ class QuestionByCategoryAndLanguage(ModelViewSet):
             #     )
 
             # Step 6: Check if the provided category_id exists in the Question model
-            try:
-                quest_cat = (
-                    queryset.filter(category__id=category_id).values("category").exists()
-                )
-            except Exception as e:
-                return Response(str(e), status=404)
-
-            if not quest_cat:
-                return Response(
-                    "There are no questions for the provided category.", status=400
-                )
-
-            # Step 7: Filter the queryset by survey_id and category_id
-            if survey_id:
-                queryset = queryset.filter(survey__id=survey_id)
-            if category_id:
-                queryset = queryset.filter(category__id=category_id)
-
-            # Step 8: Serialize the filtered queryset and return the data
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)

@@ -77,8 +77,6 @@ def singleSurveyFormatter(survey):
     singleSurvey["status"] = survey.status
     singleSurvey["language"] = survey.language
 
-    
-
     # all_categories = []
     # for cat in survey.categories.all():
     #     singleCategory = {}
@@ -154,8 +152,6 @@ def singleSurveyWithQuestions(survey):
     singleSurvey["description"] = survey.description
     singleSurvey["status"] = survey.status
     singleSurvey["language"] = survey.language
-
-   
 
     allDataCollectors = []
     for user in survey.dataCollectors.all():
@@ -235,6 +231,7 @@ def multipleQuestionFormatter(questions):
     for question in questions:
         singleQuestion = {}
         singleQuestion["id"] = question.pk
+        singleQuestion["survey"] = question.survey.id
         singleQuestion["title"] = question.title
         singleQuestion["hasMultipleAnswers"] = question.hasMultipleAnswers
         singleQuestion["isRequired"] = question.isRequired
