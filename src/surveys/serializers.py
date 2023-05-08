@@ -7,6 +7,18 @@ from rest_framework import serializers
 from .models import *
 
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ["id", "name"]
+
+
+class LanguageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Language
+        fields = ["id", "name"]
+
+
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
@@ -28,26 +40,26 @@ class ProjectSerializer(serializers.ModelSerializer):
         ]
 
 
+# class SurveySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Survey
+#         #fields = ["id", "project", "name", "description", "status"]
+#         fields='__all__'
+
+
 class SurveySerializer(serializers.ModelSerializer):
     class Meta:
         model = Survey
-        fields = ["id", "project", "name", "description", "status"]
-        # fields='__all__'
+        fields = "__all__"
+
+   
 
 
 class QuestionSerializer(serializers.ModelSerializer):
+    # category = serializers.CharField()
+
     class Meta:
         model = Question
         fields = "__all__"
 
-
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = ["id", "name"]
-
-
-class LanguageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Language
-        fields = ["id", "name"]
+   

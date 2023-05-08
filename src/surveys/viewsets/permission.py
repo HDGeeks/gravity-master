@@ -15,7 +15,7 @@ class HasAdminRole(BasePermission):
 
         # Check if the user has the "admin" role
         admin_role_id = Role.objects.filter(role="Admin").id
-        if user.role_id == admin_role_id:
+        if user.role == admin_role_id:
             return True
 
         return False

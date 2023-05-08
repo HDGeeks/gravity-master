@@ -7,15 +7,15 @@ env = environ.Env()
 
 environ.Env.read_env()
 
-# # aws credentials
-# AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY')
-# AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS')
-# AWS_SECRET_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
-# AWS_REGION_NAME = env('AWS_region')
-# AWS_BUCKET_URL = env('AWS_bucket_url')
+# aws credentials
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY')
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS')
+AWS_SECRET_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+AWS_REGION_NAME = env('AWS_region')
+AWS_BUCKET_URL = env('AWS_bucket_url')
 
-# # mapbox credentials
-# MAPBOX_TOKEN = env('Mapbox_token')
+# mapbox credentials
+MAPBOX_TOKEN = env('Mapbox_token')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,7 +30,7 @@ SECRET_KEY = "django-insecure-!8b!^srfuoe3p63tve3gm$-4q51_oyp8q1co&gyh6a0cvlg@p!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["49.12.233.43", "localhost", "http:127.0.0.1", "https://127.0.0.1"]
+ALLOWED_HOSTS = ["49.12.233.43", "localhost", "http://127.0.0.1", "https://127.0.0.1"]
 
 
 # Application definition
@@ -54,11 +54,12 @@ INSTALLED_APPS = [
     "drf_yasg",
 ]
 
-# LOCATION_FIELD = {
-#     'provider.mapbox.access_token': MAPBOX_TOKEN,
-#     'provider.mapbox.max_zoom': 13,
-#     'provider.mapbox.id': 'mapbox.streets',
-# }
+LOCATION_FIELD = {
+    'provider.mapbox.access_token': MAPBOX_TOKEN,
+    'provider.mapbox.max_zoom': 13,
+    'provider.mapbox.id': 'mapbox.streets',
+}
+
 SWAGGER_SETTINGS = {
     "SECURITY_DEFINITIONS": {
         "Basic": {"type": "basic"},

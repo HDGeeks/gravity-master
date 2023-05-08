@@ -2,6 +2,7 @@
 import re
 import boto3
 from django.conf import settings
+from django.forms import ValidationError
 
 # rest framework imports
 
@@ -16,18 +17,22 @@ from surveys.utils import formatter
 
 from utils import responses
 from utils import permissions as custom_permissions
+from surveys.serializers import QuestionSerializer, SurveySerializer
+from rest_framework.response import Response
+from surveys.models import Category
+from rest_framework import status
 
-# bucket_name = settings.AWS_SECRET_BUCKET_NAME
-# bucket_url = settings.AWS_BUCKET_URL
+bucket_name = settings.AWS_SECRET_BUCKET_NAME
+bucket_url = settings.AWS_BUCKET_URL
 
-# session = boto3.session.Session()
+session = boto3.session.Session()
 
-# client_s3 = session.client(
-#     's3',
-#     region_name = settings.AWS_REGION_NAME,
-#     aws_access_key_id = settings.AWS_ACCESS_KEY_ID,
-#     aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY
-# )
+client_s3 = session.client(
+    's3',
+    region_name = settings.AWS_REGION_NAME,
+    aws_access_key_id = settings.AWS_ACCESS_KEY_ID,
+    aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY
+)
 
 
 class SurveyViewSet(viewsets.ModelViewSet):
@@ -59,18 +64,31 @@ class SurveyViewSet(viewsets.ModelViewSet):
 
         return [permission() for permission in permission_classes]
 
-    """
-        Get Surveys endpoint
-    """
+    # """
+    #     Get Surveys endpoint
+    # """
 
     def list(self, request, format=None):
-        surveys = Survey.objects.all()
+        language = request.query_params.get("language")
 
-        return responses.SuccessResponseHandler(
-            True,
-            "Successfully found the survey data",
-            formatter.multipleSurveyFormatter(surveys),
-        )
+        # Step 2: Get the queryset for the Question model
+        # queryset = self.queryset
+
+        # edge case
+        if not language:
+            return responses.SuccessResponseHandler(
+                True,
+                "Successfully found the survey data",
+                formatter.multipleSurveyFormatter(self.queryset),
+            )
+
+        else:
+            queryset = self.queryset.filter(language=language)
+            return responses.SuccessResponseHandler(
+                True,
+                "Successfully found the survey data",
+                formatter.multipleSurveyFormatter(queryset),
+            )
 
     """
         Get A Survey By Id
@@ -98,10 +116,13 @@ class SurveyViewSet(viewsets.ModelViewSet):
             or not "status"
             or not "description"
             or not "project_id"
+            or not "language"
             or not "questions" in request.data.keys()
         ):
             return responses.BadRequestErrorHandler("All required fields must be input")
 
+        if Survey.objects.filter(name=request.data["name"]).exists():
+            raise ValidationError("A survey with this name already exists.")
         # checks if the project exists
         checkProject = Project.objects.filter(pk=request.data["project_id"])
         if not checkProject.exists():
@@ -118,34 +139,55 @@ class SurveyViewSet(viewsets.ModelViewSet):
         # checks if questions is not empty
         if len(request.data["questions"]) == 0:
             return responses.BadRequestErrorHandler("questions can not be empty")
-        print("=============================================", request.data["status"])
-        # creates the survey
-        createdSurvey = Survey.objects.create(
-            project=checkProject[0],
-            name=request.data["name"],
-            description=request.data["description"],
-            status=request.data["status"],
-        )
-        # print(request.data['questions'])
-        # request.data['questions'] is a list .Loop through it .
-        for question in request.data["questions"]:
-            hasMultiple = False
-            isDependent = False
-            depQuestion = None
-            title = ""
-            isRequired = True
-            questionType = ""
-            questionOptions = None
-            audioURL = None
-            videoURL = None
-            imageURL = None
-            category = Category.objects.get(id=question["category_id"])
-            language = Language.objects.get(id=question["language_id"])
+        # payload
+        data = {
+            "project": request.data["project_id"],
+            "name": request.data["name"],
+            "description": request.data["description"],
+            "status": request.data["status"],
+            "dataCollectors": request.data["dataCollectors"],
+            "language": request.data["language"],
+            # "categories": request.data["categories"],
+        }
 
+        # do the saving , using serializers
+        surevy_serializer = SurveySerializer(data=data)
+        if surevy_serializer.is_valid(raise_exception=True):
+            surevy_serializer.save()
+
+        print(
+            f"================================== >\n{surevy_serializer.data}\n================t"
+        )
+        # return Response(surevy_serializer.data)
+
+        # creates the survey
+        # createdSurvey = Survey.objects.create(
+        #     project=checkProject[0],
+        #     name=request.data["name"],
+        #     description=request.data["description"],
+        #     status=request.data["status"],
+        # )
+
+        for question in request.data["questions"]:
+            # hasMultiple = False
+            # isDependent = False
+            # depQuestion = None
+            # title = ""
+            # isRequired = True
+            # questionType = ""
+            # questionOptions = None
+            # audioURL = None
+            # videoURL = None
+            # imageURL = None
+            # category = Category.objects.get(id=question["category_id"])
+            # language = Language.objects.get(id=question["language_id"])
+
+            # check if question is dict
             if type(question) is not dict:
                 return responses.BadRequestErrorHandler(
                     "All question elements must be an object"
                 )
+            # check if len is not zero
             if len(question) == 0:
                 return responses.BadRequestErrorHandler(
                     "Each Question must be non-empty"
@@ -246,31 +288,50 @@ class SurveyViewSet(viewsets.ModelViewSet):
                         "question isRequired must be boolean"
                     )
                 isRequired = question["isRequired"]
-            print("====================================", category)
-            print("====================================", language)
-            Question.objects.create(
-                survey=createdSurvey,
-                title=title,
-                category=category,
-                language=language,
-                hasMultipleAnswers=hasMultiple,
-                isRequired=isRequired,
-                type=questionType,
-                options=questionOptions,
-                audioURL=audioURL,
-                videoURL=videoURL,
-                imageURL=imageURL,
-                isDependent=isDependent,
-                depQuestion=depQuestion,
-            )
+
+            # category validation
+            question_category = question["category"]
+
+            if question_category:
+                category, created = Category.objects.get_or_create(
+                    name=question_category
+                )
+            question["category"] = category.id
+
+            question["survey"] = surevy_serializer.data["id"]
+            question_serializer = QuestionSerializer(data=question)
+            if question_serializer.is_valid(raise_exception=True):
+                question_serializer.save()
+
+                result = {
+                    "survey": surevy_serializer.data,
+                    "question": question_serializer.data,
+                }
+                return Response(result, status=200)
+
+            # Question.objects.create(
+            #     survey=createdSurvey,
+            #     title=title,
+            #     category=category,
+            #     language=language,
+            #     hasMultipleAnswers=hasMultiple,
+            #     isRequired=isRequired,
+            #     type=questionType,
+            #     options=questionOptions,
+            #     audioURL=audioURL,
+            #     videoURL=videoURL,
+            #     imageURL=imageURL,
+            #     isDependent=isDependent,
+            #     depQuestion=depQuestion,
+            # )
 
         # checks if the project exists
-        return responses.SuccessResponseHandler(
-            True,
-            "Successfully created a survey",
-            # None
-            formatter.singleSurveyWithQuestions(createdSurvey),
-        )
+        # return responses.SuccessResponseHandler(
+        #     True,
+        #     "Successfully created a survey",
+        #     # None
+        #     formatter.singleSurveyWithQuestions(result),
+        # )
 
     """
         Edit Survey Endpoint
@@ -305,13 +366,28 @@ class SurveyViewSet(viewsets.ModelViewSet):
         if len(request.data["questions"]) == 0:
             return responses.BadRequestErrorHandler("questions can not be empty")
 
+        updated_data = {
+            "project": request.data["project_id"],
+            "name": request.data["name"],
+            "description": request.data["description"],
+            "status": request.data["status"],
+            "dataCollectors": request.data["dataCollectors"],
+            "language": request.data["language"],
+            # "categories": request.data["categories"],
+        }
+
+        surevy_serializer = SurveySerializer(instance=checkSurvey, data=updated_data)
+        if surevy_serializer.is_valid(raise_exception=True):
+            surevy_serializer.save()
         # updates the survey
-        checkSurvey.update(
-            project=checkProject[0],
-            name=request.data["name"],
-            description=request.data["description"],
-            status=request.data["status"],
-        )
+        # checkSurvey.update(
+        #     project=checkProject[0],
+        #     name=request.data["name"],
+        #     description=request.data["description"],
+        #     status=request.data["status"],
+        #     language=request.data["language"],
+
+        # )
 
         for question in request.data["questions"]:
             hasMultiple = False
@@ -381,20 +457,39 @@ class SurveyViewSet(viewsets.ModelViewSet):
                         "question isRequired must be boolean"
                     )
                 isRequired = question["isRequired"]
+            
+            # category validation
+            question_category = question["category"]
 
-            checkQuestion.update(
-                survey=checkSurvey[0],
-                title=title,
-                category=question["category"],
-                language=question["language"],
-                hasMultipleAnswers=hasMultiple,
-                isRequired=isRequired,
-                type=questionType,
-                options=questionOptions,
-                audioURL=audioURL,
-                videoURL=videoURL,
-                imageURL=imageURL,
-            )
+            if question_category:
+                category, created = Category.objects.get_or_create(
+                    name=question_category
+                )
+            question["category"] = category.id
+
+            question["survey"] = surevy_serializer.data["id"]
+            question_serializer = QuestionSerializer(data=question)
+            if question_serializer.is_valid(raise_exception=True):
+                question_serializer.save()
+
+                result = {
+                    "survey": surevy_serializer.data,
+                    "question": question_serializer.data,
+                }
+                return Response(result, status=200)
+
+            # checkQuestion.update(
+            #     survey=checkSurvey[0],
+            #     title=title,
+            #     category=question["category"],
+            #     hasMultipleAnswers=hasMultiple,
+            #     isRequired=isRequired,
+            #     type=questionType,
+            #     options=questionOptions,
+            #     audioURL=audioURL,
+            #     videoURL=videoURL,
+            #     imageURL=imageURL,
+            # )
 
         return responses.SuccessResponseHandler(
             True,
